@@ -1,0 +1,12 @@
+[package]
+name = "examples"
+version = "0.1.0"
+authors = ["Markus Mayer <widemeadows@gmail.com>"]
+edition = "2018"
+
+[[example]]
+name = "gitversion"
+path = "src/gitversion.rs"
+
+[build-dependencies]
+dotnet-gitversion-build = { path = "../gitversion-build" }

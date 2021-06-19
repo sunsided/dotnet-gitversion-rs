@@ -1,0 +1,16 @@
+[package]
+name = "dotnet-gitversion-build"
+version = "0.1.0"
+authors = ["Markus Mayer <widemeadows@gmail.com>"]
+edition = "2018"
+description = "Provides Semantic Versioning via GitVersion at build time"
+license = "MIT"
+keywords = ["build", "date", "time", "commit", "datetime", "gitversion", "semver"]
+
+[dependencies]
+anyhow = "1.0.41"
+serde_json = "1.0.64"
+thiserror = "1.0.25"
+serde = { version = "1.0.126", features = ["derive"] }
+tempfile = "3.2.0"
+quote = "1.0.9"

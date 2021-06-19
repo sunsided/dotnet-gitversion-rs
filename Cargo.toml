@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "gitversion-build",
+    "examples"
+]
+default-members = [
+    "gitversion-build"
+]

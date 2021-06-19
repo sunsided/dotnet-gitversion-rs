@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.27.1
+    ports:
+      - "9090:9090"
+    expose:
+      - "9090"
+    network_mode: "host"
+    volumes:
+      - type: bind
+        source: ./config/prometheus.yml
+        target: /etc/prometheus/prometheus.yml
