@@ -1,18 +1,23 @@
 # dotnet-gitversion for Rust builds
 
-Example use:
+This project provides a build-time wrapper to [GitTools/GitVersion]
+that embeds [Semantic Version] information obtained
+from the current repository state.
+
+## Prerequisites
+
+This library requires both the [.NET runtime] (e.g. .NET 5)
+and the [GitVersion.Tool] package to be installed globally, e.g.
 
 ```console
-$ cargo run --package examples --example gitversion
+$ dotnet tool install --global GitVersion.Tool --version 5.6.10
+```
 
-    Finished dev [unoptimized + debuginfo] target(s) in 0.01s
-     Running `/home/markus/dev/EigeneSources/rust/dotnet-gitversion-rs/target/debug/examples/gitversion`
+You can verify the installation by calling either
 
-Display: 0.1.0
-Debug:   0.1.0+0.Branch.master.Sha.2c2a2be063ce6d4b7621b05bec4fbc92a7005667
-SHA:     2c2a2be063ce6d4b7621b05bec4fbc92a7005667
-Commit:  2021-06-19
-
+```console
+$ dotnet gitversion
+$ dotnet-gitversion
 ```
 
 ## Usage
@@ -47,7 +52,7 @@ fn main() {
 }
 ```
 
-Example:
+Example output of the above code:
 
 ```text
 Display: 0.1.0-metrics.18
@@ -55,3 +60,51 @@ Debug:   0.1.0-metrics.18+Branch.feature-metrics.Sha.defb2e23ce68c68d3bcf45333bd
 SHA:     defb2e23ce68c68d3bcf45333bd8718cd73368a3
 Commit:  2021-06-19
 ```
+
+The `GIT_VERSION` struct itself is defined as shown below. Please
+see [GitTools/GitVersion](https://github.com/GitTools/GitVersion) for
+documentation on the field values or run `dotnet gitversion`.
+
+```rust
+pub struct GitVersion {
+    pub major: u32,
+    pub minor: u32,
+    pub patch: u32,
+    pub pre_release_tag: &'static str,
+    pub pre_release_tag_with_dash: &'static str,
+    pub pre_release_label: &'static str,
+    pub pre_release_label_with_dash: &'static str,
+    pub pre_release_number: Option<u32>,
+    pub weighted_pre_release_number: u32,
+    pub build_meta_data: Option<u32>,
+    pub build_meta_data_padded: &'static str,
+    pub full_build_meta_data: &'static str,
+    pub major_minor_patch: &'static str,
+    pub semver: &'static str,
+    #[deprecated]
+    pub legacy_semver: &'static str,
+    #[deprecated]
+    pub legacy_semver_padded: &'static str,
+    pub assembly_semver: &'static str,
+    pub assembly_sem_file_version: &'static str,
+    pub informational_version: &'static str,
+    pub branch_name: &'static str,
+    pub escaped_branch_name: &'static str,
+    pub sha: &'static str,
+    pub short_sha: &'static str,
+    pub nuget_version_v2: &'static str,
+    pub nuget_version: &'static str,
+    pub nuget_prerelease_tag_v2: &'static str,
+    pub nuget_prerelease_tag: &'static str,
+    pub version_source_sha: &'static str,
+    pub commits_since_version_source: u32,
+    pub commits_since_version_source_padded: &'static str,
+    pub uncommitted_changes: u32,
+    pub commit_date: &'static str,
+}
+```
+
+[GitTools/GitVersion]: https://github.com/GitTools/GitVersion
+[Semantic Version]: http://semver.org/
+[GitVersion.Tool]: https://www.nuget.org/packages/GitVersion.Tool/
+[.NET runtime]: https://dot.net/
