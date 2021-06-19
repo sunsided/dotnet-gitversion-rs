@@ -9,4 +9,4 @@ name = "gitversion"
 path = "src/gitversion.rs"
 
 [build-dependencies]
-dotnet-gitversion-build = { path = "../gitversion-build" }
+dotnet-gitversion-build = { path = "../gitversion-build", git = "https://github.com/sunsided/dotnet-gitversion-rs" }

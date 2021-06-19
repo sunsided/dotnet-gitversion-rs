@@ -26,7 +26,7 @@ Add `dotnet-gitversion` to your build dependencies:
 
 ```toml
 [build-dependencies]
-dotnet-gitversion-build = { path = "../gitversion", version = "*" }
+dotnet-gitversion-build = { git = "https://github.com/sunsided/dotnet-gitversion-rs" }
 ```
 
 Create or update your `build.rs`:
