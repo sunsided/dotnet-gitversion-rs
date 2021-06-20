@@ -20,6 +20,9 @@ $ dotnet gitversion
 $ dotnet-gitversion
 ```
 
+**Note that a `GitVersion.yml` configuration file might be required in your repo.**
+See the [GitVersion.yml](GitVersion.yml) of this project for an example.
+
 ## Usage
 
 Add `dotnet-gitversion` to your build dependencies:
@@ -29,36 +32,50 @@ Add `dotnet-gitversion` to your build dependencies:
 dotnet-gitversion-build = { git = "https://github.com/sunsided/dotnet-gitversion-rs" }
 ```
 
-Create or update your `build.rs`:
+Create or update your `build.rs` to call `dotnet_gitversion_build::build()`.
+This method creates the `gitversion.rs` file in the `OUT_DIR` directory 
+and additionally returns the intermediate representation, allowing to 
+access the GitVersion information in subsequent build steps:
 
 ```rust
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-  dotnet_gitversion_build::build()?;
-  Ok(())
+    let _gv = dotnet_gitversion_build::build()?;
+    Ok(())
 }
 ```
 
-This generates the file `gitversion.rs` in the `OUT_DIR` build directory.
-After including the file you have access to the static `GIT_VERSION` variable.
+After including the generated file you have access to the static `GIT_VERSION` constant.
 
 ```rust
 include!(concat!(env!("OUT_DIR"), "/gitversion.rs"));
 
 fn main() {
-  println!("Display: {}", GIT_VERSION);
-  println!("Debug:   {:?}", GIT_VERSION);
-  println!("SHA:     {}", GIT_VERSION.sha);
-  println!("Commit:  {}", GIT_VERSION.commit_date);
+    // Use the "global" constant.
+    println!("Display:      {}", GIT_VERSION);
+    println!("Debug:        {:?}", GIT_VERSION);
+    println!("SHA:          {}", GIT_VERSION.sha);
+    println!("Commit:       {}", GIT_VERSION.commit_date);
+
+    // The GitVersion::new() function allows you to obtain
+    // the struct as a constant.
+    const GV: GitVersion = GitVersion::new();
+    println!("Branch name:  {}", GV.branch_name);
+
+    // Alternatively you can use the Default trait to obtain a new instance.
+    let gv = GitVersion::default();
+    println!("Short commit: {}", gv.short_sha);
 }
 ```
 
 Example output of the above code:
 
 ```text
-Display: 0.1.0-metrics.18
-Debug:   0.1.0-metrics.18+Branch.feature-metrics.Sha.defb2e23ce68c68d3bcf45333bd8718cd73368a3
-SHA:     defb2e23ce68c68d3bcf45333bd8718cd73368a3
-Commit:  2021-06-19
+Display:      0.1.1
+Debug:        0.1.1+1.Branch.main.Sha.6acd0cf0f3311443d7fcb757fe731efa99ad4ff8
+SHA:          6acd0cf0f3311443d7fcb757fe731efa99ad4ff8
+Commit:       2021-06-20
+Branch name:  main
+Short commit: 6acd0cf
 ```
 
 The imported `GitVersion` struct itself is defined as shown below. Please

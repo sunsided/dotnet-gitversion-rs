@@ -1,4 +1,13 @@
 branches:
+  master:
+    regex: (^master$|^origin\/master$|^main$|^origin\/main$)
+    mode: ContinuousDelivery
+    tag: ''
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: false
   develop:
     regex: dev(elop)?(ment)?$
     mode: ContinuousDeployment
