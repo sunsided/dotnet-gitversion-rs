@@ -4,9 +4,9 @@ use anyhow::Result;
 use gitversion::GitVersion;
 use quote::quote;
 use std::env;
-use std::fmt::{Debug, Formatter};
-use std::fs::{create_dir_all, File};
-use std::io::{BufReader, BufWriter, Read, Write};
+use std::fmt::Debug;
+use std::fs::File;
+use std::io::{BufWriter, Read, Write};
 use std::path::Path;
 use std::process::Command;
 use thiserror::Error;
@@ -28,18 +28,20 @@ fn same_content_as(path: &Path, content: &str) -> Result<bool> {
     Ok(current == content)
 }
 
+#[allow(unused)]
 macro_rules! include_gitversion_from_path {
     ($path: tt) => {
         include!($path);
     };
 }
 
-fn read_version(path: String) -> Result<GitVersion> {
+/// Calls `dotnet-gitversion`, converts the JSON output and generates a `gitversion.rs`
+/// file in the `OUT_DIR` directory.
+pub fn build() -> Result<GitVersion> {
+    let path = env::var_os("OUT_DIR").ok_or(Error::MissingEnvVar)?;
     let path: &Path = path.as_ref();
-    let file = File::open(path)?;
-    let reader = BufReader::new(file);
-    let gv: GitVersion = serde_json::from_reader(reader)?;
-    Ok(gv)
+    let path = path.join("gitversion.rs");
+    write_version_file(path.as_path())
 }
 
 fn dotnet_gitversion() -> Option<String> {
@@ -55,15 +57,8 @@ fn dotnet_gitversion() -> Option<String> {
         })
 }
 
-pub fn build() -> Result<()> {
-    let path = env::var_os("OUT_DIR").ok_or(Error::MissingEnvVar)?;
-    let path: &Path = path.as_ref();
-    let path = path.join("gitversion.rs");
-    write_version_file(path.as_path())
-}
-
 /// Write version.rs file to OUT_DIR
-fn write_version_file(path: &Path) -> Result<()> {
+fn write_version_file(path: &Path) -> Result<GitVersion> {
     let content = if let Some(json) = dotnet_gitversion() {
         json.to_owned()
     } else {
@@ -75,10 +70,10 @@ fn write_version_file(path: &Path) -> Result<()> {
     let major = gv.major;
     let minor = gv.minor;
     let patch = gv.patch;
-    let pre_release_tag = gv.pre_release_tag;
-    let pre_release_tag_with_dash = gv.pre_release_tag_with_dash;
-    let pre_release_label = gv.pre_release_label;
-    let pre_release_label_with_dash = gv.pre_release_label_with_dash;
+    let pre_release_tag = gv.pre_release_tag.clone();
+    let pre_release_tag_with_dash = gv.pre_release_tag_with_dash.clone();
+    let pre_release_label = gv.pre_release_label.clone();
+    let pre_release_label_with_dash = gv.pre_release_label_with_dash.clone();
 
     let has_pre_release_number = gv.pre_release_number != None;
     let pre_release_number = gv.pre_release_number.unwrap_or(0);
@@ -88,28 +83,28 @@ fn write_version_file(path: &Path) -> Result<()> {
     let has_build_meta_data = gv.build_meta_data != None;
     let build_meta_data = gv.build_meta_data.unwrap_or(0);
 
-    let build_meta_data_padded = gv.build_meta_data_padded;
-    let full_build_meta_data = gv.full_build_meta_data;
-    let major_minor_patch = gv.major_minor_patch;
-    let semver = gv.semver;
-    let legacy_semver = gv.legacy_semver;
-    let legacy_semver_padded = gv.legacy_semver_padded;
-    let assembly_semver = gv.assembly_semver;
-    let assembly_sem_file_version = gv.assembly_sem_file_version;
-    let informational_version = gv.informational_version;
-    let branch_name = gv.branch_name;
-    let escaped_branch_name = gv.escaped_branch_name;
-    let sha = gv.sha;
-    let short_sha = gv.short_sha;
-    let nuget_version_v2 = gv.nuget_version_v2;
-    let nuget_version = gv.nuget_version;
-    let nuget_prerelease_tag_v2 = gv.nuget_prerelease_tag_v2;
-    let nuget_prerelease_tag = gv.nuget_prerelease_tag;
-    let version_source_sha = gv.version_source_sha;
+    let build_meta_data_padded = gv.build_meta_data_padded.clone();
+    let full_build_meta_data = gv.full_build_meta_data.clone();
+    let major_minor_patch = gv.major_minor_patch.clone();
+    let semver = gv.semver.clone();
+    let legacy_semver = gv.legacy_semver.clone();
+    let legacy_semver_padded = gv.legacy_semver_padded.clone();
+    let assembly_semver = gv.assembly_semver.clone();
+    let assembly_sem_file_version = gv.assembly_sem_file_version.clone();
+    let informational_version = gv.informational_version.clone();
+    let branch_name = gv.branch_name.clone();
+    let escaped_branch_name = gv.escaped_branch_name.clone();
+    let sha = gv.sha.clone();
+    let short_sha = gv.short_sha.clone();
+    let nuget_version_v2 = gv.nuget_version_v2.clone();
+    let nuget_version = gv.nuget_version.clone();
+    let nuget_prerelease_tag_v2 = gv.nuget_prerelease_tag_v2.clone();
+    let nuget_prerelease_tag = gv.nuget_prerelease_tag.clone();
+    let version_source_sha = gv.version_source_sha.clone();
     let commits_since_version_source = gv.commits_since_version_source;
-    let commits_since_version_source_padded = gv.commits_since_version_source_padded;
+    let commits_since_version_source_padded = gv.commits_since_version_source_padded.clone();
     let uncommitted_changes = gv.uncommitted_changes;
-    let commit_date = gv.commit_date;
+    let commit_date = gv.commit_date.clone();
 
     let tokens = quote! {
         #[allow(dead_code)]
@@ -210,7 +205,7 @@ fn write_version_file(path: &Path) -> Result<()> {
         let mut file = BufWriter::new(File::create(&path)?);
         write!(file, "{}", code)?;
     }
-    Ok(())
+    Ok(gv)
 }
 
 #[cfg(test)]

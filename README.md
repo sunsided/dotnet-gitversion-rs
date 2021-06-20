@@ -61,7 +61,7 @@ SHA:     defb2e23ce68c68d3bcf45333bd8718cd73368a3
 Commit:  2021-06-19
 ```
 
-The `GIT_VERSION` struct itself is defined as shown below. Please
+The imported `GitVersion` struct itself is defined as shown below. Please
 see [GitTools/GitVersion](https://github.com/GitTools/GitVersion) for
 documentation on the field values or run `dotnet gitversion`.
 
