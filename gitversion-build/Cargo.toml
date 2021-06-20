@@ -1,6 +1,6 @@
 [package]
 name = "dotnet-gitversion-build"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Markus Mayer <widemeadows@gmail.com>"]
 edition = "2018"
 description = "Provides Semantic Versioning via GitVersion at build time"
