@@ -70,12 +70,12 @@ fn main() {
 Example output of the above code:
 
 ```text
-Display:      0.1.1
-Debug:        0.1.1+1.Branch.main.Sha.6acd0cf0f3311443d7fcb757fe731efa99ad4ff8
-SHA:          6acd0cf0f3311443d7fcb757fe731efa99ad4ff8
+Display:      0.2.0
+Debug:        0.2.0+Branch.main.Sha.2e3c96c6dbd30a0ca25e51d2fb10982042670a46
+SHA:          2e3c96c6dbd30a0ca25e51d2fb10982042670a46
 Commit:       2021-06-20
 Branch name:  main
-Short commit: 6acd0cf
+Short commit: 2e3c96c
 ```
 
 The imported `GitVersion` struct itself is defined as shown below. Please
@@ -109,9 +109,13 @@ pub struct GitVersion {
     pub escaped_branch_name: &'static str,
     pub sha: &'static str,
     pub short_sha: &'static str,
+    #[deprecated]
     pub nuget_version_v2: &'static str,
+    #[deprecated]
     pub nuget_version: &'static str,
+    #[deprecated]
     pub nuget_prerelease_tag_v2: &'static str,
+    #[deprecated]
     pub nuget_prerelease_tag: &'static str,
     pub version_source_sha: &'static str,
     pub commits_since_version_source: u32,
