@@ -33,9 +33,9 @@ dotnet-gitversion-build = { git = "https://github.com/sunsided/dotnet-gitversion
 ```
 
 Create or update your `build.rs` to call `dotnet_gitversion_build::build()`.
-This method creates the `gitversion.rs` file in the `OUT_DIR` directory 
-and additionally returns the intermediate representation, allowing to 
-access the GitVersion information in subsequent build steps:
+This method populates various `GITVERSION_` environment variables to be used with the `env!` macro,
+creates the `gitversion.rs` file in the `OUT_DIR` directory 
+and additionally returns the intermediate representation:
 
 ```rust
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -44,7 +44,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-After including the generated file you have access to the static `GIT_VERSION` constant.
+The `GITVERSION_...` environment variables can be used immediately:
+
+```rust
+fn main() {
+    // Use the build-generated environment variables.
+    println!("Info version: {}", env!("GITVERSION_INFORMATIONAL_VERSION"));
+    println!("Full SemVer:  {}", env!("GITVERSION_FULL_SEMVER"));
+}
+```
+
+Example output of the above code:
+
+```text
+Info version: 0.2.0+Branch.main.Sha.645a21e7b6358e9b72978a1b46cbd6c55a85a9af
+Full SemVer:  0.2.0
+```
+
+After including the generated `gitversion.rs` file you will additionally have access
+to the static `GIT_VERSION` constant and the `GitVersion` struct:
 
 ```rust
 include!(concat!(env!("OUT_DIR"), "/gitversion.rs"));
@@ -81,6 +99,8 @@ Short commit: 2e3c96c
 The imported `GitVersion` struct itself is defined as shown below. Please
 see [GitTools/GitVersion](https://github.com/GitTools/GitVersion) for
 documentation on the field values or run `dotnet gitversion`.
+The environment variables names are generated with a `GITVERSION_` prefix followed
+by the filed names, e.g. `GITVERSION_MAJOR_MINOR_PATCH`.
 
 ```rust
 pub struct GitVersion {

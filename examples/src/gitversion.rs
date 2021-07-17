@@ -1,6 +1,11 @@
+// Required for the GIT_VERSION global field and GitVersion struct.
 include!(concat!(env!("OUT_DIR"), "/gitversion.rs"));
 
 fn main() {
+    // Use the build-generated environment variables.
+    println!("Info version: {}", env!("GITVERSION_INFORMATIONAL_VERSION"));
+    println!("Full SemVer:  {}", env!("GITVERSION_FULL_SEMVER"));
+
     // Use the "global" constant.
     println!("Display:      {}", GIT_VERSION);
     println!("Debug:        {:?}", GIT_VERSION);

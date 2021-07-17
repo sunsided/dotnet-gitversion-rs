@@ -46,7 +46,7 @@ pub fn build() -> Result<GitVersion> {
 
 fn dotnet_gitversion() -> Option<String> {
     Command::new("dotnet-gitversion")
-        // .args(&["describe", "--tags", "--always"])
+        .args(&["/nofetch"])
         .output()
         .ok()
         .and_then(|out| {
@@ -71,44 +71,183 @@ fn write_version_file(path: &Path) -> Result<GitVersion> {
     let major = gv.major;
     let minor = gv.minor;
     let patch = gv.patch;
+    println!("cargo:rustc-env=GITVERSION_MAJOR={}", major.to_string());
+    println!("cargo:rustc-env=GITVERSION_MINOR={}", minor.to_string());
+    println!("cargo:rustc-env=GITVERSION_PATCH={}", patch.to_string());
+
     let pre_release_tag = gv.pre_release_tag.clone();
     let pre_release_tag_with_dash = gv.pre_release_tag_with_dash.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_PRE_RELEASE_TAG={}",
+        pre_release_tag.clone()
+    );
+    println!(
+        "cargo:rustc-env=GITVERSION_PRE_RELEASE_TAG_WITH_DASH={}",
+        pre_release_tag_with_dash.clone()
+    );
+
     let pre_release_label = gv.pre_release_label.clone();
     let pre_release_label_with_dash = gv.pre_release_label_with_dash.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_PRE_RELEASE_LABEL={}",
+        pre_release_label.clone()
+    );
+    println!(
+        "cargo:rustc-env=GITVERSION_PRE_RELEASE_LABEL_WITH_DASH={}",
+        pre_release_label_with_dash.clone()
+    );
 
     let has_pre_release_number = gv.pre_release_number != None;
     let pre_release_number = gv.pre_release_number.unwrap_or(0);
+    if let Some(number) = gv.pre_release_number {
+        println!(
+            "cargo:rustc-env=GITVERSION_PRE_RELEASE_NUMBER={}",
+            number.to_string()
+        );
+    }
 
     let weighted_pre_release_number = gv.weighted_pre_release_number;
+    println!(
+        "cargo:rustc-env=GITVERSION_WEIGHTED_PRE_RELEASE_NUMBER={}",
+        weighted_pre_release_number.to_string()
+    );
 
     let has_build_meta_data = gv.build_meta_data != None;
     let build_meta_data = gv.build_meta_data.unwrap_or(0);
+    if let Some(number) = gv.build_meta_data {
+        println!(
+            "cargo:rustc-env=GITVERSION_BUILD_META_DATA={}",
+            number.to_string()
+        );
+    }
 
     let build_meta_data_padded = gv.build_meta_data_padded.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_BUILD_META_DATA_PADDED={}",
+        build_meta_data_padded.clone()
+    );
+
     let full_build_meta_data = gv.full_build_meta_data.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_FULL_BUILD_META_DATA={}",
+        full_build_meta_data.clone()
+    );
+
     let major_minor_patch = gv.major_minor_patch.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_MAJOR_MINOR_PATCH={}",
+        major_minor_patch.clone()
+    );
+
     let semver = gv.semver.clone();
+    println!("cargo:rustc-env=GITVERSION_SEMVER={}", semver.clone());
 
     let legacy_semver = gv.legacy_semver.clone();
     let legacy_semver_padded = gv.legacy_semver_padded.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_LEGACY_SEMVER={}",
+        legacy_semver.clone()
+    );
+    println!(
+        "cargo:rustc-env=GITVERSION_LEGACY_SEMVER_PADDED={}",
+        legacy_semver_padded.clone()
+    );
 
     let assembly_semver = gv.assembly_semver.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_ASSEMBLY_SEMVER={}",
+        assembly_semver.clone()
+    );
+
     let assembly_sem_file_version = gv.assembly_sem_file_version.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_ASSEMBLY_SEM_FILE_VERSION={}",
+        assembly_sem_file_version.clone()
+    );
+
     let informational_version = gv.informational_version.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_INFORMATIONAL_VERSION={}",
+        informational_version.clone()
+    );
+
     let full_semver = gv.full_semver.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_FULL_SEMVER={}",
+        full_semver.clone()
+    );
+
     let branch_name = gv.branch_name.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_BRANCH_NAME={}",
+        branch_name.clone()
+    );
+
     let escaped_branch_name = gv.escaped_branch_name.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_ESCAPED_BRANCH_NAME={}",
+        escaped_branch_name.clone()
+    );
+
     let sha = gv.sha.clone();
+    println!("cargo:rustc-env=GITVERSION_SHA={}", sha.clone());
+
     let short_sha = gv.short_sha.clone();
+    println!("cargo:rustc-env=GITVERSION_SHORT_SHA={}", short_sha.clone());
+
     let nuget_version_v2 = gv.nuget_version_v2.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_NUGET_VERSION_V2={}",
+        nuget_version_v2.clone()
+    );
+
     let nuget_version = gv.nuget_version.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_NUGET_VERSION={}",
+        nuget_version.clone()
+    );
+
     let nuget_prerelease_tag_v2 = gv.nuget_prerelease_tag_v2.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_NUGET_PRERELEASE_TAG_V2={}",
+        nuget_prerelease_tag_v2.clone()
+    );
+
     let nuget_prerelease_tag = gv.nuget_prerelease_tag.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_NUGET_PRERELEASE_TAG={}",
+        nuget_prerelease_tag.clone()
+    );
+
     let version_source_sha = gv.version_source_sha.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_VERSION_SOURCE_SHA={}",
+        version_source_sha.clone()
+    );
+
     let commits_since_version_source = gv.commits_since_version_source;
+    println!(
+        "cargo:rustc-env=GITVERSION_COMMITS_SINCE_VERSION_SOURCE={}",
+        commits_since_version_source.clone()
+    );
+
     let commits_since_version_source_padded = gv.commits_since_version_source_padded.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_COMMITS_SINCE_VERSION_SOURCE_PADDED={}",
+        commits_since_version_source_padded.clone()
+    );
+
     let uncommitted_changes = gv.uncommitted_changes;
+    println!(
+        "cargo:rustc-env=GITVERSION_UNCOMMITTED_CHANGES={}",
+        uncommitted_changes.to_string()
+    );
+
     let commit_date = gv.commit_date.clone();
+    println!(
+        "cargo:rustc-env=GITVERSION_COMMIT_DATE={}",
+        commit_date.clone()
+    );
 
     let tokens = quote! {
         #[allow(dead_code)]
