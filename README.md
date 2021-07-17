@@ -29,7 +29,7 @@ Add `dotnet-gitversion` to your build dependencies:
 
 ```toml
 [build-dependencies]
-dotnet-gitversion-build = { git = "https://github.com/sunsided/dotnet-gitversion-rs" }
+dotnet-gitversion-build = "0.3.0"
 ```
 
 Create or update your `build.rs` to call `dotnet_gitversion_build::build()`.
