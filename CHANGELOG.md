@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.3.0 - 2021-07-17
+
+### Added
+
+- Support for the `env!` macro was added by generating `GITVERSION_...` environment
+  variables during the build.
+
 ## 0.2.0 - 2021-06-20
 
 ### Added
